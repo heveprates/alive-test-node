@@ -7,11 +7,7 @@ export class StockingApiController {
 
   @Get('stock/:stockName/quote')
   quote(@Param('stockName') stockName: string) {
-    return {
-      name: stockName,
-      lastPrice: 50,
-      pricedAt: new Date().toISOString(),
-    };
+    return this.stockingApiService.quote(stockName);
   }
 
   @Get('stocks/:stockName/history')
@@ -20,27 +16,7 @@ export class StockingApiController {
     @Query('to') to: string,
     @Param('stockName') stockName: string,
   ) {
-    return {
-      name: stockName,
-      prices: [
-        {
-          opening: 33,
-          low: 4545,
-          high: 67,
-          closing: 78,
-          pricedAt: new Date(from).toISOString(),
-          volume: 90,
-        },
-        {
-          opening: 23,
-          low: 343,
-          high: 56,
-          closing: 24,
-          pricedAt: new Date(to).toISOString(),
-          volume: 56,
-        },
-      ],
-    };
+    return this.stockingApiService.history(from, to, stockName);
   }
 
   @Get('stocks/:stockName/gains')
@@ -49,14 +25,11 @@ export class StockingApiController {
     @Query('purchasedAmount') purchasedAmount: string,
     @Param('stockName') stockName: string,
   ) {
-    return {
-      name: stockName,
-      lastPrice: 4555.66,
-      priceAtDate: 5000.33,
-      purchasedAmount,
+    return this.stockingApiService.gains(
       purchasedAt,
-      capitalGains: -60,
-    };
+      purchasedAmount,
+      stockName,
+    );
   }
 
   @Get('stocks/:stockName/compare')
@@ -64,19 +37,6 @@ export class StockingApiController {
     @Query('stocksToCompare') stocksToCompare: string[],
     @Param('stockName') stockName: string,
   ) {
-    return {
-      lastPrices: [
-        {
-          name: stockName,
-          lastPrice: 356.99,
-          pricedAt: '2023-10-25',
-        },
-        ...stocksToCompare.map((stock) => ({
-          name: stock,
-          lastPrice: 356.99,
-          pricedAt: '2023-10-25',
-        })),
-      ],
-    };
+    return this.stockingApiService.compare(stocksToCompare, stockName);
   }
 }

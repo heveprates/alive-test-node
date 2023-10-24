@@ -1,26 +1,64 @@
 import { Injectable } from '@nestjs/common';
-import { CreateStockingApiDto } from './dto/create-stocking-api.dto';
-import { UpdateStockingApiDto } from './dto/update-stocking-api.dto';
 
 @Injectable()
 export class StockingApiService {
-  create(createStockingApiDto: CreateStockingApiDto) {
-    return 'This action adds a new stockingApi';
+  quote(stockName: string) {
+    return {
+      name: stockName,
+      lastPrice: 50,
+      pricedAt: new Date().toISOString(),
+    };
   }
 
-  findAll() {
-    return `This action returns all stockingApi`;
+  history(from: string, to: string, stockName: string) {
+    return {
+      name: stockName,
+      prices: [
+        {
+          opening: 33,
+          low: 4545,
+          high: 67,
+          closing: 78,
+          pricedAt: new Date(from).toISOString(),
+          volume: 90,
+        },
+        {
+          opening: 23,
+          low: 343,
+          high: 56,
+          closing: 24,
+          pricedAt: new Date(to).toISOString(),
+          volume: 56,
+        },
+      ],
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} stockingApi`;
+  gains(purchasedAt: string, purchasedAmount: string, stockName: string) {
+    return {
+      name: stockName,
+      lastPrice: 4555.66,
+      priceAtDate: 5000.33,
+      purchasedAmount,
+      purchasedAt,
+      capitalGains: -60,
+    };
   }
 
-  update(id: number, updateStockingApiDto: UpdateStockingApiDto) {
-    return `This action updates a #${id} stockingApi`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} stockingApi`;
+  compare(stocksToCompare: string[], stockName: string) {
+    return {
+      lastPrices: [
+        {
+          name: stockName,
+          lastPrice: 356.99,
+          pricedAt: new Date().toISOString(),
+        },
+        ...stocksToCompare.map((stock) => ({
+          name: stock,
+          lastPrice: 356.99,
+          pricedAt: new Date().toISOString(),
+        })),
+      ],
+    };
   }
 }
