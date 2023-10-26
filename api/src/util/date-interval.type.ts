@@ -1,28 +1,25 @@
+import { InvalidDateStringError } from './errors/invalid-datestring.error';
+import { InvalidIntervalError } from './errors/invalid-interval.error';
 import { formatDate } from './format-date';
 
 export type DateString = string;
 
 export class DateInterval {
-  constructor(
-    public readonly to: DateString,
-    public readonly from: DateString,
-  ) {
-    if (from > to) {
-      throw new Error('Invalid interval');
+  public readonly to: DateString;
+  public readonly from: DateString;
+  constructor(from: Date, to: Date) {
+    if (from.getTime() > to.getTime()) {
+      throw new InvalidIntervalError(from, to);
     }
-    if (!DateInterval.validateDateString(from)) {
-      throw new Error('Invalid from date');
-    }
-    if (!DateInterval.validateDateString(to)) {
-      throw new Error('Invalid to date');
-    }
+
+    this.from = DateInterval.validateDateString(from);
+    this.to = DateInterval.validateDateString(to);
   }
 
-  public static validateDateString(input: string): DateString {
-    const date = new Date(input + 'T00:00:00Z');
+  public static validateDateString(date: Date): DateString {
     const dateString = formatDate(date);
-    if (dateString !== input) {
-      throw new Error('Invalid date string');
+    if (dateString !== date.toISOString().slice(0, 10)) {
+      throw new InvalidDateStringError(date);
     }
     return dateString;
   }

@@ -9,7 +9,7 @@ export class FetchApiService {
   private readonly apiKey: string;
 
   constructor(private readonly dataParseService: DataParseService) {
-    this.apiKey = 'WSZ54P2SIZEFQWSS';
+    this.apiKey = 'V9LKCNRLC57MJPG1';
 
     this.apiAlphaVantageInstance = axios.create({
       baseURL: 'https://www.alphavantage.co/query',
