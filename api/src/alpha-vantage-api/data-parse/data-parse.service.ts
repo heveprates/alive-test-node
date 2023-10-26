@@ -3,6 +3,7 @@ import { GlobalQuoteResponseDTO } from '../dto/global-quote-response.dto';
 import { QuoteDTO } from '../dto/quote.dto';
 import { TimeSeriesDailyResponseDTO } from '../dto/time-series-daily-response.dto';
 import { SeriesDailyDTO } from '../dto/series-daily.dto';
+import { DateInterval } from 'src/util/date-interval.type';
 
 @Injectable()
 export class DataParseService {
@@ -21,11 +22,10 @@ export class DataParseService {
 
   parseTimeSeriesDaily(
     input: TimeSeriesDailyResponseDTO,
-    from: string,
-    to: string,
+    interval: DateInterval,
   ): SeriesDailyDTO[] {
     return Object.entries(input['Time Series (Daily)'])
-      .filter(([date]) => from <= date && date <= to)
+      .filter(([date]) => interval.isDateInsideInterval(date))
       .map(([date, values]) => ({
         date,
         open: parseFloat(values['1. open']),

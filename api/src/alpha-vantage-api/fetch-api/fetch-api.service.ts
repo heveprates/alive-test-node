@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
 import { DataParseService } from '../data-parse/data-parse.service';
+import { DateInterval } from 'src/util/date-interval.type';
 
 @Injectable()
 export class FetchApiService {
@@ -28,7 +29,7 @@ export class FetchApiService {
     return this.dataParseService.parseGlobalQuote(resp.data);
   }
 
-  async timeSeriesDaily(stockSymbol: string, from: string, to: string) {
+  async timeSeriesDaily(stockSymbol: string, interval: DateInterval) {
     const resp = await this.apiAlphaVantageInstance.get('', {
       params: {
         function: 'TIME_SERIES_DAILY',
@@ -36,6 +37,6 @@ export class FetchApiService {
         outputsize: 'full',
       },
     });
-    return this.dataParseService.parseTimeSeriesDaily(resp.data, from, to);
+    return this.dataParseService.parseTimeSeriesDaily(resp.data, interval);
   }
 }
