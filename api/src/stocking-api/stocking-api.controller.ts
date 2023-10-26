@@ -1,5 +1,7 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
+import z from 'zod';
 import { StockingApiService } from './stocking-api.service';
+import { DateInterval } from 'src/util/date-interval.type';
 
 @Controller()
 export class StockingApiController {
@@ -16,7 +18,20 @@ export class StockingApiController {
     @Query('to') to: string,
     @Param('stockName') stockName: string,
   ) {
-    return this.stockingApiService.history(from, to, stockName);
+    const inputSchema = z.object({
+      from: z.coerce.date(),
+      to: z.coerce.date(),
+      stockName: z.string(),
+    });
+    const requestData = inputSchema.parse({
+      from,
+      to,
+      stockName,
+    });
+    return this.stockingApiService.history(
+      new DateInterval(requestData.from, requestData.to),
+      requestData.stockName,
+    );
   }
 
   @Get('stocks/:stockName/gains')
@@ -25,10 +40,20 @@ export class StockingApiController {
     @Query('purchasedAmount') purchasedAmount: string,
     @Param('stockName') stockName: string,
   ) {
-    return this.stockingApiService.gains(
+    const inputSchema = z.object({
+      purchasedAt: z.coerce.date(),
+      purchasedAmount: z.coerce.number().int(),
+      stockName: z.string(),
+    });
+    const requestData = inputSchema.parse({
       purchasedAt,
       purchasedAmount,
       stockName,
+    });
+    return this.stockingApiService.gains(
+      requestData.purchasedAt,
+      requestData.purchasedAmount,
+      requestData.stockName,
     );
   }
 
@@ -37,6 +62,17 @@ export class StockingApiController {
     @Query('stocksToCompare') stocksToCompare: string[],
     @Param('stockName') stockName: string,
   ) {
-    return this.stockingApiService.compare(stocksToCompare, stockName);
+    const inputSchema = z.object({
+      stocksToCompare: z.array(z.string()),
+      stockName: z.string(),
+    });
+    const requestData = inputSchema.parse({
+      stocksToCompare,
+      stockName,
+    });
+    return this.stockingApiService.compare(
+      requestData.stocksToCompare,
+      requestData.stockName,
+    );
   }
 }
