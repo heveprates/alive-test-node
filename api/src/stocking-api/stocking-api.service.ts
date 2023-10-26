@@ -1,64 +1,82 @@
 import { Injectable } from '@nestjs/common';
+import { FetchApiService as AlphaVantageApiService } from 'src/alpha-vantage-api/fetch-api/fetch-api.service';
+import { DateInterval } from 'src/util/date-interval.type';
+import { NoDataFoundError } from 'src/util/errors/no-data-found.error';
 
 @Injectable()
 export class StockingApiService {
-  quote(stockName: string) {
+  constructor(
+    private readonly alphaVantageApiService: AlphaVantageApiService,
+  ) {}
+
+  async quote(stockName: string) {
+    const quote = await this.alphaVantageApiService.globalQuote(stockName);
     return {
-      name: stockName,
-      lastPrice: 50,
-      pricedAt: new Date().toISOString(),
+      name: quote.symbol,
+      lastPrice: quote.price,
+      pricedAt: quote.day,
     };
   }
 
-  history(from: string, to: string, stockName: string) {
+  async history(dateInterval: DateInterval, stockName: string) {
+    const history = await this.alphaVantageApiService.timeSeriesDaily(
+      stockName,
+      dateInterval,
+    );
     return {
       name: stockName,
-      prices: [
-        {
-          opening: 33,
-          low: 4545,
-          high: 67,
-          closing: 78,
-          pricedAt: new Date(from).toISOString(),
-          volume: 90,
-        },
-        {
-          opening: 23,
-          low: 343,
-          high: 56,
-          closing: 24,
-          pricedAt: new Date(to).toISOString(),
-          volume: 56,
-        },
-      ],
+      prices: history.map((item) => {
+        return {
+          opening: item.open,
+          low: item.low,
+          high: item.high,
+          closing: item.close,
+          pricedAt: new Date(item.date).toISOString(),
+          volume: item.volume,
+        };
+      }),
     };
   }
 
-  gains(purchasedAt: string, purchasedAmount: string, stockName: string) {
+  async gains(purchasedAt: Date, purchasedAmount: number, stockName: string) {
+    const [quoteAt] = await this.alphaVantageApiService.timeSeriesDaily(
+      stockName,
+      new DateInterval(purchasedAt, purchasedAt),
+    );
+    if (quoteAt === undefined) {
+      throw new NoDataFoundError();
+    }
+    const quoteNow = await this.alphaVantageApiService.globalQuote(stockName);
     return {
       name: stockName,
-      lastPrice: 4555.66,
-      priceAtDate: 5000.33,
+      lastPrice: quoteNow.price,
+      priceAtDate: quoteAt.close,
       purchasedAmount,
       purchasedAt,
-      capitalGains: -60,
+      capitalGains: (quoteNow.price - quoteAt.close) * purchasedAmount,
     };
   }
 
-  compare(stocksToCompare: string[], stockName: string) {
+  async compare(stocksToCompare: string[], stockName: string) {
+    const quotesPromises = [stockName, ...stocksToCompare].map((stock) =>
+      this.alphaVantageApiService.globalQuote(stock),
+    );
+    const quotes = await Promise.allSettled(quotesPromises);
+
     return {
-      lastPrices: [
-        {
-          name: stockName,
-          lastPrice: 356.99,
-          pricedAt: new Date().toISOString(),
-        },
-        ...stocksToCompare.map((stock) => ({
-          name: stock,
-          lastPrice: 356.99,
-          pricedAt: new Date().toISOString(),
-        })),
-      ],
+      lastPrices: quotes
+        .map((promise) => {
+          if (promise.status !== 'fulfilled') {
+            return;
+          }
+          const quote = promise.value;
+          return {
+            name: quote.symbol,
+            lastPrice: quote.price,
+            pricedAt: quote.day,
+          };
+        })
+        .filter((quote) => quote !== undefined),
     };
   }
 }
