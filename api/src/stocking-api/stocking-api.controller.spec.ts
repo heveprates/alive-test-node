@@ -4,6 +4,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { StockingApiController } from './stocking-api.controller';
 import { StockingApiService } from './stocking-api.service';
 import { DateInterval } from '../util/date-interval.type';
+import { ParamIsInvalidError } from '../util/errors/param-is-invalid.error';
 
 describe('StockingApiController', () => {
   let controller: StockingApiController;
@@ -40,10 +41,16 @@ describe('StockingApiController', () => {
       expect(stockingApiService.quote).toHaveBeenCalledWith(stockName);
     });
 
-    it('quote: should throw an error if the stock name is not provided', async () => {
-      await expect(controller.quote('')).rejects.toThrow(
-        'Stock name is required',
-      );
+    it('should throw an error if the stock name is not provided', async () => {
+      const stockName = '';
+
+      expect(() => controller.quote(stockName)).toThrow(ParamIsInvalidError);
+    });
+
+    it('should throw an error if the stock name is not provided', async () => {
+      const stockName = '';
+
+      expect(() => controller.quote(stockName)).toThrow(ParamIsInvalidError);
     });
   });
 
@@ -98,8 +105,8 @@ describe('StockingApiController', () => {
       const to = '2023-10-26';
       const stockName = 'AAPL';
 
-      await expect(controller.history(from, to, stockName)).rejects.toThrow(
-        'Invalid date format',
+      expect(() => controller.history(from, to, stockName)).toThrow(
+        ParamIsInvalidError,
       );
     });
 
@@ -107,8 +114,8 @@ describe('StockingApiController', () => {
       const from = '2023-10-25';
       const to = '2023-10-26';
 
-      await expect(controller.history(from, to, '')).rejects.toThrow(
-        'Stock name is required',
+      expect(() => controller.history(from, to, '')).toThrow(
+        ParamIsInvalidError,
       );
     });
   });
@@ -148,9 +155,9 @@ describe('StockingApiController', () => {
       const purchasedAmount = '10.5';
       const purchasedAt = '2023-10-20';
 
-      await expect(
+      expect(() =>
         controller.gains(purchasedAt, purchasedAmount, stockName),
-      ).rejects.toThrow('Purchased amount must be an integer');
+      ).toThrow(ParamIsInvalidError);
     });
 
     it('should throw an error if the purchased date is invalid', async () => {
@@ -158,9 +165,9 @@ describe('StockingApiController', () => {
       const purchasedAmount = '10';
       const purchasedAt = 'invalid-date';
 
-      await expect(
+      expect(() =>
         controller.gains(purchasedAt, purchasedAmount, stockName),
-      ).rejects.toThrow('Invalid date format');
+      ).toThrow(ParamIsInvalidError);
     });
 
     it('should throw an error if the stock name is not provided', async () => {
@@ -168,9 +175,9 @@ describe('StockingApiController', () => {
       const purchasedAmount = '10';
       const purchasedAt = '2023-10-20';
 
-      await expect(
+      expect(() =>
         controller.gains(purchasedAt, purchasedAmount, stockName),
-      ).rejects.toThrow('Stock name is required');
+      ).toThrow(ParamIsInvalidError);
     });
   });
 
@@ -218,18 +225,18 @@ describe('StockingApiController', () => {
       const stocksToCompare = [];
       const stockName = 'AAPL';
 
-      await expect(
-        controller.compare(stocksToCompare, stockName),
-      ).rejects.toThrow('Stocks to compare are required');
+      expect(() => controller.compare(stocksToCompare, stockName)).toThrow(
+        ParamIsInvalidError,
+      );
     });
 
     it('should throw an error if the stock name is not provided', async () => {
       const stocksToCompare = ['AAPL', 'GOOGL', 'TSLA'];
       const stockName = '';
 
-      await expect(
-        controller.compare(stocksToCompare, stockName),
-      ).rejects.toThrow('Stock name is required');
+      expect(() => controller.compare(stocksToCompare, stockName)).toThrow(
+        ParamIsInvalidError,
+      );
     });
   });
 });
