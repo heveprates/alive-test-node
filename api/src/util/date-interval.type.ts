@@ -17,11 +17,13 @@ export class DateInterval {
   }
 
   public static validateDateString(date: Date): DateString {
-    const dateString = formatDate(date);
-    if (dateString !== date.toISOString().slice(0, 10)) {
-      throw new InvalidDateStringError(date);
-    }
-    return dateString;
+    try {
+      const dateString = formatDate(date);
+      if (dateString === date.toISOString().slice(0, 10)) {
+        return dateString;
+      }
+    } catch {}
+    throw new InvalidDateStringError(date);
   }
 
   public isDateInsideInterval(date: DateString): boolean {
