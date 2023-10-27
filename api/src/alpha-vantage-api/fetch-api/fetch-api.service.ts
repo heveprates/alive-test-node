@@ -1,20 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import axios, { AxiosInstance } from 'axios';
+import { AxiosInstance } from 'axios';
+import { setup } from 'axios-cache-adapter';
 import { DataParseService } from '../data-parse/data-parse.service';
 import { DateInterval } from 'src/util/date-interval.type';
 
+const ONE_HOUR = 60 * 60 * 1000;
 @Injectable()
 export class FetchApiService {
   private readonly apiAlphaVantageInstance: AxiosInstance;
   private readonly apiKey: string;
 
   constructor(private readonly dataParseService: DataParseService) {
-    this.apiKey = 'V9LKCNRLC57MJPG1';
+    this.apiKey = 'VAD3LM6A67L2PDYG';
 
-    this.apiAlphaVantageInstance = axios.create({
+    this.apiAlphaVantageInstance = setup({
       baseURL: 'https://www.alphavantage.co/query',
       params: {
         apikey: this.apiKey,
+      },
+      cache: {
+        maxAge: ONE_HOUR,
+        exclude: {
+          query: false,
+        },
       },
     });
   }
@@ -26,6 +34,7 @@ export class FetchApiService {
         symbol: quoteSymbol,
       },
     });
+
     return this.dataParseService.parseGlobalQuote(resp.data);
   }
 
@@ -37,6 +46,7 @@ export class FetchApiService {
         outputsize: 'full',
       },
     });
+
     return this.dataParseService.parseTimeSeriesDaily(resp.data, interval);
   }
 }
