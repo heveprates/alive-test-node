@@ -2,17 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { AxiosCacheInstance, setupCache } from 'axios-cache-interceptor';
 
-import { DateInterval } from 'src/util/date-interval.type';
-import { NoDataFoundError } from 'src/util/errors/no-data-found.error';
-import { DataParseService } from 'src/alpha-vantage-api/data-parse/data-parse.service';
+import { DataParseService } from '../data-parse/data-parse.service';
 import {
   TimeSeriesDailyResponseDTO,
   TimeSeriesDailyResponseSchema,
-} from 'src/alpha-vantage-api/dto/time-series-daily-response.dto';
+} from '../dto/time-series-daily-response.dto';
 import {
   GlobalQuoteResponseDTO,
   GlobalQuoteResponseSchema,
-} from 'src/alpha-vantage-api/dto/global-quote-response.dto';
+} from '../dto/global-quote-response.dto';
+import { DateInterval } from '../../util/date-interval.type';
+import { NoDataFoundError } from '../../util/errors/no-data-found.error';
 
 const ONE_HOUR = 60 * 60 * 1000;
 
@@ -68,7 +68,6 @@ export class FetchApiService {
     try {
       TimeSeriesDailyResponseSchema.parse(resp.data);
     } catch {
-      console.log(resp.data);
       throw new NoDataFoundError();
     }
     return this.dataParseService.parseTimeSeriesDaily(resp.data, interval);

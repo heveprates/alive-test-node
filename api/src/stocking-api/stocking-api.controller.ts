@@ -1,7 +1,8 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import z from 'zod';
+
 import { StockingApiService } from './stocking-api.service';
-import { DateInterval } from 'src/util/date-interval.type';
+import { DateInterval } from '../util/date-interval.type';
 
 @Controller()
 export class StockingApiController {

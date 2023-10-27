@@ -3,7 +3,7 @@ import { GlobalQuoteResponseDTO } from '../dto/global-quote-response.dto';
 import { QuoteDTO } from '../dto/quote.dto';
 import { TimeSeriesDailyResponseDTO } from '../dto/time-series-daily-response.dto';
 import { SeriesDailyDTO } from '../dto/series-daily.dto';
-import { DateInterval } from 'src/util/date-interval.type';
+import { DateInterval } from '../../util/date-interval.type';
 
 @Injectable()
 export class DataParseService {
