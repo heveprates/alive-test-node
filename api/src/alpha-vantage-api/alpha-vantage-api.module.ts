@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
 
 import { DataParseService } from './data-parse/data-parse.service';
 import { FetchApiService } from './fetch-api/fetch-api.service';
@@ -10,7 +11,9 @@ import { FetchApiService } from './fetch-api/fetch-api.service';
     FetchApiService,
     {
       provide: 'AlphaVantageAPIKEY',
-      useValue: 'LA56I75ZAUEMKQ9Y',
+      useFactory: (configService: ConfigService) =>
+        configService.get<string>('ALPHA_VANTAGE_APIKEY'),
+      inject: [ConfigService],
     },
     DataParseService,
   ],

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { StockingApiModule } from './stocking-api/stocking-api.module';
@@ -7,6 +8,13 @@ import { AlphaVantageApiModule } from './alpha-vantage-api/alpha-vantage-api.mod
 @Module({
   controllers: [AppController],
   providers: [AppService],
-  imports: [StockingApiModule, AlphaVantageApiModule],
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+    }),
+    StockingApiModule,
+    AlphaVantageApiModule,
+  ],
 })
 export class AppModule {}
