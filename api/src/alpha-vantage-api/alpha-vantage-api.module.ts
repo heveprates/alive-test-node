@@ -6,7 +6,14 @@ import { FetchApiService } from './fetch-api/fetch-api.service';
 
 @Module({
   imports: [HttpModule],
-  providers: [FetchApiService, DataParseService],
+  providers: [
+    FetchApiService,
+    {
+      provide: 'AlphaVantageAPIKEY',
+      useValue: 'LA56I75ZAUEMKQ9Y',
+    },
+    DataParseService,
+  ],
   exports: [FetchApiService],
 })
 export class AlphaVantageApiModule {}

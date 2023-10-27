@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { AxiosCacheInstance, setupCache } from 'axios-cache-interceptor';
 
@@ -19,13 +19,13 @@ const ONE_HOUR = 60 * 60 * 1000;
 @Injectable()
 export class FetchApiService {
   private readonly apiAlphaVantageInstance: AxiosCacheInstance;
-  private readonly apiKey: string;
 
   constructor(
+    @Inject('AlphaVantageAPIKEY')
+    private readonly apiKey: string,
     private readonly dataParseService: DataParseService,
     httpService: HttpService,
   ) {
-    this.apiKey = 'LA56I75ZAUEMKQ9Y';
     const axiosInstance = httpService.axiosRef;
     axiosInstance.defaults.baseURL = 'https://www.alphavantage.co/query';
     axiosInstance.defaults.params = {
