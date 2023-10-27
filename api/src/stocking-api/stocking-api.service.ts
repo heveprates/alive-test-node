@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { FetchApiService as AlphaVantageApiService } from 'src/alpha-vantage-api/fetch-api/fetch-api.service';
 
 import { DateInterval } from '../util/date-interval.type';
 import { NoDataFoundError } from '../util/errors/no-data-found.error';
+import { FetchApiService as AlphaVantageApiService } from '../alpha-vantage-api/fetch-api/fetch-api.service';
 
 @Injectable()
 export class StockingApiService {

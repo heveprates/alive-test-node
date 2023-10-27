@@ -10,6 +10,7 @@ export class StockingApiController {
 
   @Get('stock/:stockName/quote')
   quote(@Param('stockName') stockName: string) {
+    z.string().min(1).parse(stockName);
     return this.stockingApiService.quote(stockName);
   }
 
@@ -22,7 +23,7 @@ export class StockingApiController {
     const inputSchema = z.object({
       from: z.coerce.date(),
       to: z.coerce.date(),
-      stockName: z.string(),
+      stockName: z.string().min(1),
     });
     const requestData = inputSchema.parse({
       from,
@@ -44,7 +45,7 @@ export class StockingApiController {
     const inputSchema = z.object({
       purchasedAt: z.coerce.date(),
       purchasedAmount: z.coerce.number().int(),
-      stockName: z.string(),
+      stockName: z.string().min(1),
     });
     const requestData = inputSchema.parse({
       purchasedAt,
@@ -64,8 +65,8 @@ export class StockingApiController {
     @Param('stockName') stockName: string,
   ) {
     const inputSchema = z.object({
-      stocksToCompare: z.array(z.string()),
-      stockName: z.string(),
+      stocksToCompare: z.array(z.string().min(1)).min(1),
+      stockName: z.string().min(1),
     });
     const requestData = inputSchema.parse({
       stocksToCompare,
