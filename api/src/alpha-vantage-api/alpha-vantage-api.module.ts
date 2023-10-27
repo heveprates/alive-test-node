@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
-import { FetchApiService } from './fetch-api/fetch-api.service';
+import { HttpModule } from '@nestjs/axios';
+
 import { DataParseService } from './data-parse/data-parse.service';
+import { FetchApiService } from './fetch-api/fetch-api.service';
 
 @Module({
+  imports: [HttpModule],
   providers: [FetchApiService, DataParseService],
   exports: [FetchApiService],
 })
